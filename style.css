@@ -224,10 +224,11 @@
 @media (max-width: 780px) {
 
     .widget {
-        width: 100vw;
-        height: 100svh;
-        border-radius: 0;
-        box-shadow: none;
+        width: calc(100vw - 20px);
+        height: calc(100svh - 20px);
+        margin: 10px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     }
 }
 

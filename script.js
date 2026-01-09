@@ -147,9 +147,9 @@ function buildMessagePayload(text) {
                 type: 'text',
                 status: 'inbound',
                 text: text,
-                timestamp: Date.now()
+                timestamp: Math.floor(Date.now() / 1000)
             }
-            
+
         ]
     }
 }
@@ -205,8 +205,20 @@ document.addEventListener('DOMContentLoaded', () => {
         messageInput.value = '';
         messageInput.focus();
 
-        showBotThinking(12, () => {
-            addMessage('Это ответ от менеджера', 'bot');
+        showBotThinking(12, async () => {
+            try {
+                const result = await sendMessageToBackend(text);
+
+                if (result?.messages?.length) {
+                    result.messages.forEach(msg => {
+                        if (msg.type === 'text') {
+                            addMessage(msg.text, 'bot');
+                        }
+                    });
+                }
+            } catch {
+                addMessage('Произошла ошибка. Попробуйте позже', 'bot');
+            }
         });
     });
 
@@ -229,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             showBotThinking(12, async () => {
                 try {
-                    const result = await sendMessageToBackend(text);
+                    const result = await sendMessageToBackend(messageText);
 
                     if (result?.messages?.length) {
                         result.messages.forEach(msg => {
