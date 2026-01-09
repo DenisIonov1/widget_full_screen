@@ -214,7 +214,7 @@
 
 .widget__back-body {
     margin: 0;
-    height: 100dvh;
+    height: 100svh;
     background-color: rgb(194, 244, 193);
     display: flex;
     justify-content: center;
@@ -225,7 +225,7 @@
 
     .widget {
         width: 100vw;
-        height: 100dvh;
+        height: 100svh;
         border-radius: 0;
         box-shadow: none;
     }

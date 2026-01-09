@@ -124,6 +124,59 @@ function enableInput() {
     if (textarea) setTimeout(() => textarea.focus(), 50);
 }
 
+function getChatId() {
+    let chatId = localStorage.getItem('neuro_widget_chat_id');
+    if (!chatId) {
+        chatId = crypto.randomUUID();
+        localStorage.setItem('neuro_widget_chat_id', chatId)
+    }
+    return chatId;
+}
+
+function generateMessageId() {
+    return crypto.randomUUID();
+}
+
+function buildMessagePayload(text) {
+    return {
+        messages: [
+            {
+                messageId: generateMessageId(),
+                chatType: 'neuro_widget',
+                chatId: getChatId(),
+                type: 'text',
+                status: 'inbound',
+                text: text,
+                timestamp: Date.now()
+            }
+            
+        ]
+    }
+}
+
+async function sendMessageToBackend(text) {
+    const payload = buildMessagePayload(text);
+
+    try {
+        const response = await fetch('', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            throw new Error('Ошибка отправки сообщения');
+        }
+
+        return await response.json();
+    } catch (err) {
+        console.error('Ошибка API:', err);
+        throw err;
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.querySelector('.widget__form');
     const messageInput = document.querySelector('.message-input');
@@ -174,12 +227,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 suggestionsList.remove();
             }
 
-            showBotThinking(12, () => {
-                addMessage('Это ответ от менеджера', 'bot');
+            showBotThinking(12, async () => {
+                try {
+                    const result = await sendMessageToBackend(text);
+
+                    if (result?.messages?.length) {
+                        result.messages.forEach(msg => {
+                            if (msg.type === 'text') {
+                                addMessage(msg.text, 'bot');
+                            }
+                        });
+                    }
+                } catch {
+                    addMessage('Произошла ошибка. Попробуйте позже', 'bot');
+                }
             });
         }
     });
-
-
 });
 
