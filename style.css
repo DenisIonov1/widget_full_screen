@@ -227,27 +227,31 @@
 
 @media (max-width: 780px) {
     .widget {
-        width: calc(100vw - 20px);
-        height: calc(100svh - 20px);
-        margin: 10px;
-        border-radius: 16px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        width: 100vw;
+        height: 100svh;
+        margin: 0;
+        border-radius: 0;
+        box-shadow: none;
     }
     .widget__body {
-        min-height: 60vh;
+        min-height: auto;
+        height: calc(100% - 60px);
+        padding: 15px;
+    }
+    .widget__footer {
+        padding: 10px 15px;
     }
 }
 
 @media (max-width: 480px) {
     .widget {
-        height: calc(100svh - 40px); 
-        margin: 20px 10px;
+        height: 100svh;
     }
 
     .widget__body {
         font-size: 14px;
-        min-height: 65vh;
-        padding: 12px;
+        height: 12px 15px;
+        padding: 12px 15px;
     }
 
     .suggestions-list__item {
