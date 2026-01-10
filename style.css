@@ -250,7 +250,7 @@
 
     .widget__body {
         font-size: 14px;
-        height: 12px 15px;
+        height: calc(100% - 60px);
         padding: 12px 15px;
     }
 
