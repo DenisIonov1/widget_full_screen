@@ -1,4 +1,4 @@
-const API_URL = ' https://f4d365a8e628.ngrok-free.app/webhook/widget';
+const API_URL = 'https://f4d365a8e628.ngrok-free.app/webhook/widget';
 const PROJECT_ID = '1';
 let thinkingTimer = null;
 let isBotThinking = false;
