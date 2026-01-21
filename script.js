@@ -1,3 +1,5 @@
+const API_URL = ' https://f4d365a8e628.ngrok-free.app/webhook/widget';
+const PROJECT_ID = '1';
 let thinkingTimer = null;
 let isBotThinking = false;
 
@@ -144,6 +146,7 @@ function buildMessagePayload(text) {
                 messageId: generateMessageId(),
                 chatType: 'neuro_widget',
                 chatId: getChatId(),
+                projectId: PROJECT_ID,
                 type: 'text',
                 status: 'inbound',
                 text: text,
@@ -158,7 +161,7 @@ async function sendMessageToBackend(text) {
     const payload = buildMessagePayload(text);
 
     try {
-        const response = await fetch('', {
+        const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -209,12 +212,8 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const result = await sendMessageToBackend(text);
 
-                if (result?.messages?.length) {
-                    result.messages.forEach(msg => {
-                        if (msg.type === 'text') {
-                            addMessage(msg.text, 'bot');
-                        }
-                    });
+                if (result?.response) {
+                    addMessage(result.response, 'bot');
                 }
             } catch {
                 addMessage('Произошла ошибка. Попробуйте позже', 'bot');
@@ -243,12 +242,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 try {
                     const result = await sendMessageToBackend(messageText);
 
-                    if (result?.messages?.length) {
-                        result.messages.forEach(msg => {
-                            if (msg.type === 'text') {
-                                addMessage(msg.text, 'bot');
-                            }
-                        });
+                    if (result?.response) {
+                        addMessage(result.response, 'bot');
                     }
                 } catch {
                     addMessage('Произошла ошибка. Попробуйте позже', 'bot');
