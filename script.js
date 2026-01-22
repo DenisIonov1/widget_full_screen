@@ -52,7 +52,7 @@ function hideSuggestions() {
     }
 }
 
-function showBotThinking(duration = 1, onDone) {
+function showBotThinking(duration = 12) {
     const widgetBody = document.querySelector('.widget__body');
     if (!widgetBody) return;
 
@@ -60,7 +60,7 @@ function showBotThinking(duration = 1, onDone) {
     disableInput();
 
     if (thinkingTimer) {
-        clearTimeout(thinkingTimer.intervalId);
+        clearInterval(thinkingTimer.intervalId);
         thinkingTimer.element?.remove();
     }
 
@@ -93,8 +93,6 @@ function showBotThinking(duration = 1, onDone) {
 
             isBotThinking = false;
             enableInput();
-
-            onDone?.();
         }
     }, 1000);
 
@@ -102,6 +100,16 @@ function showBotThinking(duration = 1, onDone) {
         element: thinkingEl,
         intervalId
     };
+}
+
+function hideBotThinking() {
+    if (thinkingTimer) {
+        clearInterval(thinkingTimer.intervalId);
+        thinkingTimer.element?.remove();
+        thinkingTimer = null;
+        isBotThinking = false;
+        enableInput();
+    }
 }
 
 function disableInput() {
@@ -165,7 +173,7 @@ function buildMessagePayload(text) {
 
 async function sendMessageToBackend(text) {
     const payload = buildMessagePayload(text);
-    console.log('chat id -', payload.messages[0].chatId)
+
     try {
         const response = await fetch(API_URL, {
             method: 'POST',
@@ -197,12 +205,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        if (isBotThinking) {
-            e.preventDefault();
-            return;
-        }
+        if (isBotThinking) return;
 
         const text = messageInput.value.trim();
         if (!text) return;
@@ -214,20 +219,23 @@ document.addEventListener('DOMContentLoaded', () => {
         messageInput.value = '';
         messageInput.focus();
 
-        showBotThinking(1, async () => {
-            try {
-                const result = await sendMessageToBackend(text);
+        showBotThinking(12)
 
-                if (result?.response) {
-                    addMessage(result.response, 'bot');
-                }
-            } catch {
-                addMessage('Произошла ошибка. Попробуйте позже', 'bot');
+        try {
+            const result = await sendMessageToBackend(text);
+
+            hideBotThinking();
+
+            if (result?.response) {
+                addMessage(result.response, 'bot');
             }
-        });
+        } catch {
+            hideBotThinking();
+            addMessage('Произошла ошибка. Попробуйте позже', 'bot');
+        }
     });
 
-    document.addEventListener('click', (e) => {
+    document.addEventListener('click', async (e) => {
         if (e.target.matches('.suggestions-list__item')) {
             if (isBotThinking) return;
             e.preventDefault();
@@ -244,17 +252,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 suggestionsList.remove();
             }
 
-            showBotThinking(1, async () => {
-                try {
-                    const result = await sendMessageToBackend(messageText);
+            showBotThinking(12);
 
-                    if (result?.response) {
-                        addMessage(result.response, 'bot');
-                    }
-                } catch {
-                    addMessage('Произошла ошибка. Попробуйте позже', 'bot');
+
+            try {
+                const result = await sendMessageToBackend(messageText);
+
+                hideBotThinking();
+
+                if (result?.response) {
+                    addMessage(result.response, 'bot');
                 }
-            });
+            } catch {
+                hideBotThinking();
+                addMessage('Произошла ошибка. Попробуйте позже', 'bot');
+            }
+
         }
     });
 });
