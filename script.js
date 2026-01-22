@@ -1,5 +1,5 @@
-const API_URL = 'https://f4d365a8e628.ngrok-free.app/webhook/widget';
-const PROJECT_ID = '1';
+const API_URL = 'https://sr.neuro7.pro:5009/webhook/widget';
+const PROJECTS = '1';
 let thinkingTimer = null;
 let isBotThinking = false;
 
@@ -52,7 +52,7 @@ function hideSuggestions() {
     }
 }
 
-function showBotThinking(duration = 12, onDone) {
+function showBotThinking(duration = 1, onDone) {
     const widgetBody = document.querySelector('.widget__body');
     if (!widgetBody) return;
 
@@ -126,13 +126,20 @@ function enableInput() {
     if (textarea) setTimeout(() => textarea.focus(), 50);
 }
 
-function getChatId() {
-    let chatId = localStorage.getItem('neuro_widget_chat_id');
-    if (!chatId) {
-        chatId = crypto.randomUUID();
-        localStorage.setItem('neuro_widget_chat_id', chatId)
+// function getChatId() {
+//     let chatId = localStorage.getItem('neuro_widget_chat_id');
+//     if (!chatId) {
+//         chatId = crypto.randomUUID();
+//         localStorage.setItem('neuro_widget_chat_id', chatId)
+//     }
+//     return chatId;
+// }
+function getChatId(forceNew = false) {
+    if (forceNew || !window.currentChatId) {
+        window.currentChatId = crypto.randomUUID();
+        console.log('chat id:', window.currentChatId);
     }
-    return chatId;
+    return window.currentChatId;
 }
 
 function generateMessageId() {
@@ -146,20 +153,19 @@ function buildMessagePayload(text) {
                 messageId: generateMessageId(),
                 chatType: 'neuro_widget',
                 chatId: getChatId(),
-                projectId: PROJECT_ID,
+                projects: PROJECTS,
                 type: 'text',
                 status: 'inbound',
                 text: text,
                 timestamp: Math.floor(Date.now() / 1000)
             }
-
         ]
     }
 }
 
 async function sendMessageToBackend(text) {
     const payload = buildMessagePayload(text);
-
+    console.log('chat id -', payload.messages[0].chatId)
     try {
         const response = await fetch(API_URL, {
             method: 'POST',
@@ -208,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
         messageInput.value = '';
         messageInput.focus();
 
-        showBotThinking(12, async () => {
+        showBotThinking(1, async () => {
             try {
                 const result = await sendMessageToBackend(text);
 
@@ -238,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 suggestionsList.remove();
             }
 
-            showBotThinking(12, async () => {
+            showBotThinking(1, async () => {
                 try {
                     const result = await sendMessageToBackend(messageText);
 
