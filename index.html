@@ -9,14 +9,22 @@
     <script src="script.js"></script>
 </head>
 
-<body class="widget__back-body">
-    <div>
-
+<body>
+    <div style="
+    position: fixed;
+    bottom: 0px;
+    max-width: 420px;
+    left: 50%;
+    transform: translate(-50%);
+    z-index: 9999;
+    width: min(100vw, 420px);
+    ">
         <div class="widget" id="chat-widget">
             <div class="widget__body">
 
                 <div class="message message--bot">
-                    <img class="message__logo" src="img/logo.png">
+                    <img class="message__logo" src="https://denisionov1.github.io/widget_full_screen/img/logo.png"
+                        alt="Ассистент">
 
                     <div class="message__text">Здравствуйте! Помогу Вам с выбором квартиры в нашем
                         жилом комплексе. Скажите пожалуйста, что Вас интересует?</div>
@@ -26,9 +34,13 @@
                     <button class="suggestions-list__item" id="learn-more" data-message="Узнать больше о ЖК">Узнать
                         больше о ЖК</button>
                     <button class="suggestions-list__item" id="learn-flats"
-                        data-message="Узнать больше о квартирах в ЖК">Узнать больше о квартирах в ЖК</button>
+                        data-message="Узнать больше о квартирах в ЖК">Узнать
+                        больше о квартирах в ЖК</button>
                 </div>
+                <p class="widget__description">Менеджер подключится в течение 12 секунд после вашего вопроса</p>
             </div>
+
+            
 
             <div class="widget__footer">
                 <form action="#" class="widget__form">

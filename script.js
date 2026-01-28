@@ -1,7 +1,10 @@
 const API_URL = 'https://sr.neuro7.pro:5009/webhook/widget';
 const PROJECTS = '1';
+const LOGO_URL = 'https://denisionov1.github.io/widget_full_screen/img/logo.png';
+const LOGO_ALT = 'Ассистент';
 let thinkingTimer = null;
 let isBotThinking = false;
+let isFirstUserMessage = true;
 
 function addMessage(text, type, options = {}) {
     if (!text?.trim()) return null;
@@ -15,8 +18,8 @@ function addMessage(text, type, options = {}) {
     messageEl.className = `message message--${type}`;
 
     if (type === 'bot') {
-        const logoSrc = options.logoSrc || 'img/logo.png';
-        const logoAlt = options.logoAlt || 'Ассистент';
+        const logoSrc = options.logoSrc || LOGO_URL;
+        const logoAlt = options.logoAlt || LOGO_ALT;
         messageEl.innerHTML = `
       <img class="message__logo" src="${escapeHtml(logoSrc)}" alt="${escapeHtml(logoAlt)}">
       <div class="message__text">${safeText}</div>
@@ -52,6 +55,40 @@ function hideSuggestions() {
     }
 }
 
+function showTypingIndicator() {
+    const widgetBody = document.querySelector('.widget__body');
+    if (!widgetBody) return;
+
+    isBotThinking = true;
+    disableInput();
+
+    const typing = document.createElement('div');
+    typing.className = 'bot-thinking';
+    typing.innerHTML = `
+        <img class="message__logo" src="${LOGO_URL}" alt="${LOGO_ALT}">
+        <div class="message-loading">
+            <div class="message-loading__dot"></div>
+            <div class="message-loading__dot"></div>
+            <div class="message-loading__dot"></div>
+
+        <div class="typing">
+            <span class="pencil">
+                <svg width="12" height="12" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                 d="M17.71 4.0425C18.1 3.6525 18.1 3.0025 17.71 2.6325L15.37 0.2925C15 -0.0975 14.35 -0.0975 13.96 0.2925L12.12 2.1225L15.87 5.8725M0 14.2525V18.0025H3.75L14.81 6.9325L11.06 3.1825L0 14.2525Z"
+                 fill="#000" />
+                </svg>
+            </span>
+        </div>
+    </div>
+    `;
+
+    widgetBody.appendChild(typing);
+    widgetBody.scrollTop = widgetBody.scrollHeight;
+
+    thinkingTimer = {element : typing};
+}
+
 function showBotThinking(duration = 12) {
     const widgetBody = document.querySelector('.widget__body');
     if (!widgetBody) return;
@@ -67,7 +104,7 @@ function showBotThinking(duration = 12) {
     const thinkingEl = document.createElement('div');
     thinkingEl.className = 'bot-thinking';
     thinkingEl.innerHTML = `
-    <img class="message__logo" src="img/logo.png" alt="София">
+    <img class="message__logo" src="${LOGO_URL}" alt="${LOGO_ALT}">
     <div class="message-loading">
       <div class="message-loading__dot"></div>
       <div class="message-loading__dot"></div>
@@ -102,14 +139,16 @@ function showBotThinking(duration = 12) {
     };
 }
 
-function hideBotThinking() {
+function hideAnyThinking() {
     if (thinkingTimer) {
-        clearInterval(thinkingTimer.intervalId);
         thinkingTimer.element?.remove();
+        if (thinkingTimer.intervalId) {
+            clearInterval(thinkingTimer.intervalId);
+        }
         thinkingTimer = null;
-        isBotThinking = false;
-        enableInput();
     }
+    isBotThinking = false;
+    enableInput();
 }
 
 function disableInput() {
@@ -134,18 +173,9 @@ function enableInput() {
     if (textarea) setTimeout(() => textarea.focus(), 50);
 }
 
-// function getChatId() {
-//     let chatId = localStorage.getItem('neuro_widget_chat_id');
-//     if (!chatId) {
-//         chatId = crypto.randomUUID();
-//         localStorage.setItem('neuro_widget_chat_id', chatId)
-//     }
-//     return chatId;
-// }
 function getChatId(forceNew = false) {
     if (forceNew || !window.currentChatId) {
         window.currentChatId = crypto.randomUUID();
-        console.log('chat id:', window.currentChatId);
     }
     return window.currentChatId;
 }
@@ -213,24 +243,27 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!text) return;
 
         addMessage(text, 'user');
-
         hideSuggestions();
-
         messageInput.value = '';
         messageInput.focus();
 
-        showBotThinking(12)
+        if (isFirstUserMessage) {
+            showBotThinking(12);
+            isFirstUserMessage = false;
+        }else {
+            showTypingIndicator();
+        }
 
         try {
             const result = await sendMessageToBackend(text);
 
-            hideBotThinking();
+            hideAnyThinking();
 
             if (result?.response) {
                 addMessage(result.response, 'bot');
             }
         } catch {
-            hideBotThinking();
+            hideAnyThinking();
             addMessage('Произошла ошибка. Попробуйте позже', 'bot');
         }
     });
@@ -252,23 +285,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 suggestionsList.remove();
             }
 
-            showBotThinking(12);
+            if (isFirstUserMessage) {
+                showBotThinking(12);
+                isFirstUserMessage = false;
+            }else {
+                showTypingIndicator();
+            }
 
 
             try {
                 const result = await sendMessageToBackend(messageText);
 
-                hideBotThinking();
+                hideAnyThinking();
 
                 if (result?.response) {
                     addMessage(result.response, 'bot');
                 }
             } catch {
-                hideBotThinking();
+                hideAnyThinking();
                 addMessage('Произошла ошибка. Попробуйте позже', 'bot');
             }
-
         }
     });
 });
-
