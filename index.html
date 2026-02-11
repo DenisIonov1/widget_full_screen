@@ -4,59 +4,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>widget</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js"></script>
+    <!-- <link rel="stylesheet" href="btn2.css"> -->
+    <title>Document</title>
 </head>
 
 <body>
-    <div style="
-    position: fixed;
-    bottom: 0px;
-    max-width: 420px;
-    left: 50%;
-    transform: translate(-50%);
-    z-index: 9999;
-    width: min(100vw, 420px);
-    ">
-        <div class="widget" id="chat-widget">
-            <div class="widget__body">
+    <style>
+        body {
+            margin: 0;
+        }
 
-                <div class="message message--bot">
-                    <img class="message__logo" src="https://denisionov1.github.io/widget_full_screen/img/logo.png"
-                        alt="Ассистент">
+        .n7-widget-btn {
 
-                    <div class="message__text">Здравствуйте! Помогу Вам с выбором квартиры в нашем
-                        жилом комплексе. Скажите пожалуйста, что Вас интересует?</div>
-                </div>
+            border: none;
+            border-radius: 50%;
+            box-shadow: 3px 0 3px rgba(0, 0, 0, 0.25);
+            padding: 0;
+            background-color: transparent;
+            width: 55px;
 
-                <div class="suggestions-list">
-                    <button class="suggestions-list__item" id="learn-more" data-message="Узнать больше о ЖК">Узнать
-                        больше о ЖК</button>
-                    <button class="suggestions-list__item" id="learn-flats"
-                        data-message="Узнать больше о квартирах в ЖК">Узнать
-                        больше о квартирах в ЖК</button>
-                </div>
-                <p class="widget__description">Менеджер подключится в течение 12 секунд после вашего вопроса</p>
-            </div>
 
-            
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 222229999;
+            display: flex;
 
-            <div class="widget__footer">
-                <form action="#" class="widget__form">
-                    <textarea placeholder="Сообщение" class="message-input"></textarea>
-                    <button id="send-message" type="submit" class="message-submit">
-                        <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="14.5" cy="14.5" r="14.5" class="message-submit__bg" />
-                            <path class="message-submit__icon" fill-rule="evenodd" clip-rule="evenodd"
-                                d="M15 22C14.8011 22 14.6103 21.921 14.4697 21.7803C14.329 21.6397 14.25 21.4489 14.25 21.25V10.612L10.29 14.77C10.1506 14.9064 9.96351 14.9831 9.76847 14.9839C9.57343 14.9847 9.38576 14.9094 9.24527 14.7741C9.10478 14.6389 9.02252 14.4542 9.01593 14.2592C9.00934 14.0643 9.07895 13.8745 9.20999 13.73L14.46 8.23C14.53 8.15742 14.6138 8.09968 14.7066 8.06025C14.7994 8.02081 14.8992 8.00049 15 8.00049C15.1008 8.00049 15.2006 8.02081 15.2934 8.06025C15.3862 8.09968 15.47 8.15742 15.54 8.23L20.79 13.73C20.8617 13.8002 20.9187 13.8841 20.9574 13.9767C20.9961 14.0693 21.0159 14.1687 21.0155 14.2691C21.0151 14.3695 20.9946 14.4687 20.9551 14.561C20.9156 14.6533 20.858 14.7367 20.7857 14.8064C20.7134 14.876 20.6279 14.9304 20.5342 14.9663C20.4405 15.0023 20.3405 15.0191 20.2402 15.0157C20.1399 15.0123 20.0412 14.9888 19.9502 14.9466C19.8591 14.9044 19.7774 14.8444 19.71 14.77L15.75 10.612V21.25C15.75 21.4489 15.671 21.6397 15.5303 21.7803C15.3897 21.921 15.1989 22 15 22Z"
-                                fill="white" />
-                        </svg>
-                    </button>
-                </form>
-            </div>
+            align-items: center;
+            cursor: pointer;
+            box-sizing: border-box;
+
+            overflow: hidden;
+
+            transition: all 0.5s ease;
+        }
+
+        .n7-widget-toggle-menu {
+            width: 55px;
+            height: 55px;
+            border: none;
+            border-radius: 50%;
+            background-color: #418787;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+
+            box-shadow: none;
+            transition: all 0.4s ease;
+            z-index: 2;
+
+            flex-shrink: 0;
+
+
+        }
+
+        .chat-hint {
+
+            width: 0;
+            height: 55px;
+            background-color: #418787;
+            color: white;
+            border-radius: 0 28px 28px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            box-sizing: border-box;
+            font-size: 0;
+            text-align: center;
+            line-height: 1.2;
+            background: linear-gradient(269.94deg, #418787 35.47%, #1F4037 53.35%, #418787 82.24%);
+            opacity: 0;
+
+            transition: all 0.4s ease;
+
+
+
+            width: 227px;
+            padding: 0;
+
+            margin-left: -27.5px;
+            text-wrap: nowrap;
+
+            padding: 10px 20px 10px 48px;
+            font-size: 15px;
+
+
+            opacity: 0;
+        }
+
+        .n7-widget-btn.open {
+            width: 255px;
+            box-shadow: none;
+            border-radius: 0;
+        }
+
+        .n7-widget-btn.open .chat-hint {
+            opacity: 1;
+        }
+
+        .n7-widget-btn.open .n7-widget-toggle-menu {
+            box-shadow: 3px 0 3px rgba(0, 0, 0, 0.25);
+        }
+    </style>
+    <button class="n7-widget-btn">
+        <div class="n7-widget-toggle-menu" aria-label="Открыть меню чата">
+            <svg width="39" height="39" viewBox="0 0 39 39" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M6.5 19.5C6.5 16.0522 7.86964 12.7456 10.3076 10.3076C12.7456 7.86964 16.0522 6.5 19.5 6.5C22.9478 6.5 26.2544 7.86964 28.6924 10.3076C31.1304 12.7456 32.5 16.0522 32.5 19.5V27.7713C32.5 29.1493 32.5 29.835 32.2953 30.3859C32.1324 30.8224 31.8777 31.2188 31.5483 31.5483C31.2188 31.8777 30.8224 32.1324 30.3859 32.2953C29.835 32.5 29.1476 32.5 27.7713 32.5H19.5C16.0522 32.5 12.7456 31.1304 10.3076 28.6924C7.86964 26.2544 6.5 22.9478 6.5 19.5Z"
+                    stroke="white" stroke-width="2" />
+                <path d="M14.625 17.875H24.375M19.5 24.375H24.375" stroke="white" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
         </div>
-    </div>
+        <div class="chat-hint">Не готовы к звонку? <br> Напишите вопрос в чате</div>
+
+    </button>
+    <script>
+        const button = document.querySelector(".n7-widget-btn");
+        button.addEventListener("click", () => {
+
+        })
+        setTimeout(() => {
+            button.classList.add("open");
+        }, 6000)
+    </script>
 </body>
 
 </html>
